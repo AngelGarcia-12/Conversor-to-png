@@ -71,12 +71,12 @@ selected_button.pack(side=BOTTOM, pady=10)
 #! ##################################################################
 
 # Set icon drop
-icon_image = Image.open("./img/drag-and-drop.png").convert("RGBA")
+img1 = Image.open("./img/drag-and-drop.png")
+img2 = Image.open("./img/background.png").resize(img1.size)
+img2 = Image.blend(img2, img2, 0.5)
+mask = Image.new("L", img1.size, 128)
+icon_image = Image.composite(img2, img1, mask)
 icon_image = icon_image.resize((200, 200))
-alpha = 32  # Ajusta este valor para cambiar la opacidad (128 para 50% de transparencia)
-icon_data = icon_image.getdata()
-icon_image = Image.new("RGBA", icon_image.size)
-icon_image.putdata([(r, g, b, alpha) for r, g, b, a in icon_data])
 icon_tk = ImageTk.PhotoImage(icon_image)
 
 icon_label = Label(main_frame, image=icon_tk, bg=COLOR_BACKGROUND)

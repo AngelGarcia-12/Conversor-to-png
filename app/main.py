@@ -5,10 +5,101 @@ from tkinterdnd2 import DND_FILES, TkinterDnD
 from PIL import Image, ImageTk
 
 ##! CONSTANST
-SCREEN_SIZE      = '600x400'
+SCREEN_SIZE      = '600x400+400+150'
+MODAL_SIZE       = '300x200+400+250'
 COLOR_BACKGROUND = 'white'
 
 ##! LOGIC
+
+#! #################### MODALS #####################################
+def modal_confim():
+    # Created a modal window
+    modal_window = Toplevel(app)
+    modal_window.title("Successful")
+    modal_window.geometry(MODAL_SIZE)
+    modal_window.transient(app)
+    # Block the main window
+    modal_window.grab_set()
+
+    #! ############# LABEL ####################
+    label = Label(modal_window, 
+                  text="The image upload successfuly", 
+                  font=("Arial", 16), 
+                  fg="#00F226",
+                  wraplength=280)
+    label.pack(pady=60)
+    #! ########################################
+
+    modal_window.bind("<Escape>", lambda event: modal_window.destroy())
+
+    app.wait_window(modal_window)
+
+def modal_success():
+    # Created a modal window
+    modal_window = Toplevel(app)
+    modal_window.title("Successful")
+    modal_window.geometry(MODAL_SIZE)
+    modal_window.transient(app)
+    # Block the main window
+    modal_window.grab_set()
+
+    #! ############# LABEL ####################
+    label = Label(modal_window, 
+                  text="The image has been " +
+                  "transformed to png",
+                  font=("Arial", 16),
+                  fg="#00F226",
+                  wraplength=280)
+    label.pack(pady=60)
+    #! ########################################
+
+    modal_window.bind("<Escape>", lambda event: modal_window.destroy())
+
+    app.wait_window(modal_window)
+
+def modal_fail():
+    # Created a modal window
+    modal_window = Toplevel(app)
+    modal_window.title("Failure")
+    modal_window.geometry(MODAL_SIZE)
+    modal_window.transient(app)
+    # Block the main window
+    modal_window.grab_set()
+
+    #! ############# LABEL ####################
+    label = Label(modal_window, 
+                  text="There was a problem, it couldn't transform to png",
+                  font=("Arial", 16),
+                  fg="#FC0808",
+                  wraplength=280)
+    label.pack(pady=60)
+    #! ########################################
+
+    modal_window.bind("<Escape>", lambda event: modal_window.destroy())
+
+    app.wait_window(modal_window)
+
+def modal_same_png():
+    # Created a modal window
+    modal_window = Toplevel(app)
+    modal_window.title("PNG format")
+    modal_window.geometry(MODAL_SIZE)
+    modal_window.transient(app)
+    # Block the main window
+    modal_window.grab_set()
+
+    #! ############# LABEL ####################
+    label = Label(modal_window,
+                  text="The picture is a picture in format png", 
+                  font=("Arial", 16),
+                  wraplength=280)
+    label.pack(pady=60)
+    #! ########################################
+
+    modal_window.bind("<Escape>", lambda event: modal_window.destroy())
+
+    app.wait_window(modal_window)
+#! #################################################################
 
 def extract_path(path):
     split_path = path.split("/")
@@ -23,8 +114,9 @@ def extract_path(path):
 def drop(event):
     image_path = event.data
     print("Upload image successful", image_path)
-    image_path = extract_path(image_path)
+    modal_confim()
     convert_to_png(image_path)
+    modal_success()
 
 def convert_to_png(image):
     try:
@@ -35,7 +127,7 @@ def convert_to_png(image):
         output.save(output_path)
         Image.open(output_path)
     except:
-        print("There was a problem")
+        modal_fail()
 
 def selected_image():
     path_image = filedialog.askopenfilename(
@@ -43,11 +135,12 @@ def selected_image():
         filetypes=[("Files of images", "*.png *.jpg *.jpeg *.gif")]
     )
     if path_image.split("/")[-1].find(".png") != -1:
-        print("The picture is a picture in format png")
+        modal_same_png()
     else:
         print("Image selected: ", path_image)
+        modal_confim()
         convert_to_png(path_image)
-
+        modal_success()
 
 # Initialize the app
 app = TkinterDnD.Tk()
@@ -91,3 +184,8 @@ app.dnd_bind("<<Drop>>", drop)
 
 # Loop to start the app
 app.mainloop()
+# def main():
+#     app.mainloop()
+
+# if __name__ == "__main__":
+#     main()

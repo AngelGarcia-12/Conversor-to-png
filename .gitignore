@@ -2,7 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 
 # Workspaces
-*.code-workspace
+*-workspace
 
 # Images
 ./img/*.jpg

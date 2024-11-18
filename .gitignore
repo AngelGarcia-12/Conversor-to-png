@@ -1,7 +1,12 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 
+# Workspaces
 *-workspace
+
+# Images
+*.png
+*.jpg
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

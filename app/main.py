@@ -4,9 +4,12 @@ from tkinter import *
 from tkinterdnd2 import DND_FILES, TkinterDnD
 from PIL import Image, ImageTk
 
+# Initialize the app
+app = TkinterDnD.Tk()
+
 ##! CONSTANST
-SCREEN_SIZE      = '600x400+400+150'
-MODAL_SIZE       = '300x200+400+250'
+SCREEN_SIZE      = f'600x400+{round((app.winfo_screenwidth()/2) - 250)}+{round((app.winfo_screenheight()/2) - 250)}'#600x400
+MODAL_SIZE       = f'300x200+{round((app.winfo_screenwidth()/2) -100)}+{round((app.winfo_screenheight()/2) - 150)}'
 COLOR_BACKGROUND = 'white'
 
 ##! LOGIC
@@ -99,6 +102,55 @@ def modal_same_png():
     modal_window.bind("<Escape>", lambda event: modal_window.destroy())
 
     app.wait_window(modal_window)
+
+def modal_save(image):
+    # Created a modal window
+    modal_window = Toplevel(app)
+    modal_window.title("Save image")
+    modal_window.geometry(MODAL_SIZE)
+    modal_window.transient(app)
+    # Block the main window
+    modal_window.grab_set()
+
+    preview_image, filename = convert_to_png(image)
+    preview_size_image = preview_image.resize((200, 100))
+    preview_tkimage = ImageTk.PhotoImage(preview_size_image)
+
+    #! ############# FRAME ####################
+    frame = Frame(modal_window, width=300, height=100, bd=1, relief="groove")
+    frame.pack(expand=True)
+    frame.pack_propagate(False)
+    #! ########################################
+
+    #! ############# LABEL ####################
+    preview_label = Label(frame, image=preview_tkimage)
+    preview_label.pack(pady=0)
+
+    label = Label(modal_window,
+                  text="Would you like to save the image?", 
+                  font=("Arial", 14),
+                  wraplength=280)
+    label.pack(pady=5)
+    #! ########################################
+
+    #! ############# BUTTONS ##################
+    button_save = Button(modal_window,
+                    text="save",
+                    bg="#00F226",
+                    command=lambda: save_image(preview_image, filename, modal_window))
+    button_save.pack(side=LEFT, padx=60, pady=5)
+
+    button_canceled = Button(modal_window,
+                             text="canceled",
+                             bg="#FC0808",
+                             command=modal_window.destroy)
+    button_canceled.pack(side=RIGHT, padx=40, pady=5)
+    #! ########################################
+
+    modal_window.bind("<Escape>", lambda event: modal_window.destroy())
+
+    app.wait_window(modal_window)
+
 #! #################################################################
 
 def extract_path(path):
@@ -115,7 +167,8 @@ def drop(event):
     image_path = event.data
     print("Upload image successful", image_path)
     modal_confim()
-    convert_to_png(image_path)
+    # convert_to_png(image_path)
+    modal_save(image_path)
     modal_success()
 
 def convert_to_png(image):
@@ -124,9 +177,29 @@ def convert_to_png(image):
         output_path = extract_path(input_path)
         inp = Image.open(input_path)
         output = remove(inp)
-        output.save(output_path)
-        Image.open(output_path)
+        return output, output_path
     except:
+        modal_fail()
+
+def save_image(output, filename, modal):
+    output_path = filedialog.asksaveasfilename(
+        title="Save file as",
+        defaultextension=".png",
+        filetypes=[
+            ("Image PNG", "*.png"),
+            ("Image JPG", "*.jpg *.jpeg"),
+            ("All files", "*.*")
+        ],
+        initialfile=filename
+    )
+    # Verified if the file was selected
+    if output_path:
+        output.save(output_path)
+        # Image.open(output_path)
+        modal.destroy()
+        modal_success()
+        output.show()
+    else:
         modal_fail()
 
 def selected_image():
@@ -139,11 +212,8 @@ def selected_image():
     else:
         print("Image selected: ", path_image)
         modal_confim()
-        convert_to_png(path_image)
-        modal_success()
-
-# Initialize the app
-app = TkinterDnD.Tk()
+        # convert_to_png(path_image)
+        modal_save(path_image)
 
 # Set the windows
 app.geometry(SCREEN_SIZE)

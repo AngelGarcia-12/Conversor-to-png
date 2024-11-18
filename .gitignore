@@ -2,10 +2,10 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 
 # Workspaces
-*-workspace
+*.code-workspace
 
 # Images
-*.png
+./img/*.jpg
 *.jpg
 
 ### Python ###
